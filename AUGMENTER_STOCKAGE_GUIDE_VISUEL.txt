@@ -1,0 +1,79 @@
+==========================================
+GUIDE VISUEL : Augmenter le stockage VM Kali
+==========================================
+
+ETAPE 1 : ARRETER LA VM
+------------------------
+1. Dans VirtualBox, selectionne ta VM "Kali"
+2. Clique sur "Machine" → "Arrêter" (ou bouton Arrêter)
+3. Assure-toi que la VM est COMPLETEMENT eteinte (pas en veille)
+
+ETAPE 2 : OUVRIR LE GESTIONNAIRE DE MEDIAS
+-------------------------------------------
+1. Dans VirtualBox, va dans le menu : "Fichier"
+2. Clique sur "Gestionnaire de medias virtuels"
+   OU appuie sur Ctrl+D (raccourci clavier)
+
+ETAPE 3 : AUGMENTER LA TAILLE DU DISQUE
+---------------------------------------
+1. Dans la fenetre qui s'ouvre, tu verras une liste de disques
+2. Trouve "Kali.vdi" dans la liste
+3. SELECTIONNE "Kali.vdi" (clic dessus)
+4. En bas de la fenetre, tu verras des boutons :
+   - Clique sur "Proprietes" (icone d'engrenage)
+   OU
+   - Clic droit sur "Kali.vdi" → "Proprietes"
+
+5. Dans la fenetre Proprietes :
+   - Va dans l'onglet "Détails" ou "General"
+   - Cherche "Taille" ou "Size"
+   - Tu verras la taille actuelle (40.08 GB)
+   - Clique sur le bouton "Modifier" ou "Resize" ou "Expand"
+
+6. Dans la nouvelle fenetre :
+   - Augmente la taille a 80 GB ou 100 GB
+   - Clique sur "OK" ou "Appliquer"
+
+7. Attends que l'operation se termine (peut prendre quelques minutes)
+
+ETAPE 4 : ETENDRE LA PARTITION DANS KALI
+-----------------------------------------
+1. Demarre la VM Kali
+2. Ouvre un terminal
+3. Installe GParted :
+   sudo apt update
+   sudo apt install gparted -y
+
+4. Lance GParted :
+   sudo gparted
+
+5. Dans GParted :
+   - Selectionne la partition principale (souvent /dev/sda1 ou /dev/sda2)
+   - Clic droit → "Redimensionner/Deplacer"
+   - Etire la partition pour utiliser tout l'espace
+   - Clique sur le bouton "Appliquer" (icone verte ✓)
+   - Attends que ca se termine
+
+6. Ferme GParted
+
+7. Verifie que ca a marche :
+   df -h /
+
+Tu devrais voir plus d'espace disponible !
+
+==========================================
+SI TU AS DES PROBLEMES
+==========================================
+
+Alternative en ligne de commande :
+-----------------------------------
+sudo fdisk -l                    # Voir les partitions
+sudo resize2fs /dev/sda2         # Etendre (remplace sda2 par ta partition)
+
+Voir l'espace :
+---------------
+df -h /                          # Espace utilise
+lsblk                            # Voir les disques et partitions
+
+==========================================
+
