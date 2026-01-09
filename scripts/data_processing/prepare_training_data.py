@@ -20,32 +20,75 @@ def create_dirs():
 def parse_lexicon_entries(text):
     """
     Parse les entrées du lexique depuis le texte extrait
-    Format attendu: Mot français | Mot Sara (variantes)
+    Format réel: CodeLangue=mot : CodeLangue=mot mot_français
+    Exemple: Beb=mbô : Bd=rû Beb=màs , Bd=màs , à côté de
     """
     entries = []
     lines = text.split('\n')
+    
+    # Codes de langues Sara (abréviations)
+    sara_codes = ['Beb', 'Bd', 'Gor', 'Gu', 'Kbb', 'Db', 'Mb', 'Mo', 'Nar', 'KbN', 'NgT', 'Ngb', 'Sr', 'Lk', 'Kul']
+    
+    current_french = None
+    current_sara_variants = []
     
     for line in lines:
         line = line.strip()
         if not line or len(line) < 3:
             continue
         
-        # Chercher des patterns comme "mot français | mot sara1 | mot sara2"
-        # Ou "mot français    mot sara" (séparés par plusieurs espaces)
-        if '|' in line:
+        # Ignorer les lignes d'en-tête
+        if 'Lexique' in line or 'Introduction' in line or line.startswith('Page'):
+            continue
+        
+        # Pattern 1: Ligne avec codes de langues (ex: Beb=mbô : Bd=rû mot_français)
+        # Chercher les codes de langues avec =
+        sara_matches = re.findall(r'([A-Z][a-z]?[A-Z]?)=([^:,\n]+)', line)
+        
+        if sara_matches:
+            # Extraire les mots Sara
+            sara_words = []
+            for code, word in sara_matches:
+                word = word.strip().rstrip(',').strip()
+                if word and code in sara_codes:
+                    sara_words.append(word)
+            
+            # Extraire le mot français (généralement à la fin de la ligne)
+            # Chercher après les codes de langues
+            french_match = re.search(r'(?:' + '|'.join(sara_codes) + r'=[^:,\n]+[:\s,]*)+(.+)$', line)
+            if french_match:
+                french = french_match.group(1).strip().rstrip(',').strip()
+                # Nettoyer le français (enlever les codes restants)
+                french = re.sub(r'[A-Z][a-z]?[A-Z]?=[^:,\s]+', '', french).strip()
+                french = re.sub(r'^[:,\s]+|[:,\s]+$', '', french)
+                
+                if french and sara_words:
+                    entries.append({
+                        'french': french,
+                        'sara_variants': sara_words
+                    })
+            elif sara_words and current_french:
+                # Utiliser le français de la ligne précédente
+                entries.append({
+                    'french': current_french,
+                    'sara_variants': sara_words
+                })
+        
+        # Pattern 2: Ligne avec juste du français (souvent avant les codes)
+        # Format: "mot français" ou "à côté de acide : être"
+        elif re.match(r'^[àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿa-zA-Z\s,:\-]+$', line):
+            # C'est probablement une ligne de français
+            french = line.strip().rstrip(':').strip()
+            if len(french) > 2 and len(french) < 100:
+                current_french = french
+        
+        # Pattern 3: Format simple "français | sara" ou "français    sara"
+        elif '|' in line:
             parts = [p.strip() for p in line.split('|')]
             if len(parts) >= 2:
                 entries.append({
                     'french': parts[0],
-                    'sara_variants': parts[1:] if len(parts) > 1 else []
-                })
-        elif re.match(r'^[A-Za-zÀ-ÿ]+\s{2,}[A-Za-zÀ-ÿ]', line):
-            # Séparés par plusieurs espaces
-            parts = re.split(r'\s{2,}', line)
-            if len(parts) >= 2:
-                entries.append({
-                    'french': parts[0],
-                    'sara_variants': parts[1:]
+                    'sara_variants': [p.strip() for p in parts[1:] if p.strip()]
                 })
     
     return entries
