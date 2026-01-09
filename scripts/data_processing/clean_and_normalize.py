@@ -56,11 +56,14 @@ def normalize_sara_word(word):
     if not word:
         return None
     
+    # Convertir en string si ce n'est pas déjà le cas
+    if not isinstance(word, str):
+        word = str(word)
+    
     # Nettoyer
     word = word.strip()
-    word = re.sub(r'\s+', '', word)  # Enlever tous les espaces
     
-    # Enlever les caractères parasites
+    # Enlever les caractères parasites en début/fin seulement
     word = re.sub(r'^[,:;\s]+|[,:;\s]+$', '', word)
     
     # Vérifier la longueur minimale (au moins 1 caractère)
@@ -98,15 +101,30 @@ def validate_entry(entry):
     - Vérifie qu'il y a au moins une traduction Sara
     - Vérifie les longueurs raisonnables
     """
-    french = entry.get('french', '').strip()
+    french = entry.get('french', '')
+    if not isinstance(french, str):
+        french = str(french)
+    french = french.strip()
+    
     sara_variants = entry.get('sara_variants', [])
+    if not isinstance(sara_variants, list):
+        return False
     
     # Vérifier le français
-    if not french or len(french) < 1 or len(french) > 200:
+    if not french or len(french) < 1 or len(french) > 300:
         return False
     
     # Vérifier qu'il y a au moins une traduction Sara valide
-    valid_sara = [s for s in sara_variants if s and len(s.strip()) > 0 and len(s.strip()) < 100]
+    valid_sara = []
+    for s in sara_variants:
+        if not s:
+            continue
+        if not isinstance(s, str):
+            s = str(s)
+        s_clean = s.strip()
+        if len(s_clean) > 0 and len(s_clean) < 150:
+            valid_sara.append(s_clean)
+    
     if not valid_sara:
         return False
     
@@ -126,15 +144,26 @@ def normalize_entries(entries):
     print("\nNettoyage et normalisation...")
     
     for entry in tqdm(entries, desc="Normalisation"):
+        # Vérifier que c'est un dictionnaire
+        if not isinstance(entry, dict):
+            continue
+        
         # Nettoyer le français
-        french = normalize_french_word(entry.get('french', ''))
+        french_raw = entry.get('french', '')
+        if not french_raw:
+            continue
+        
+        french = normalize_french_word(french_raw)
         if not french:
             continue
         
         # Nettoyer les variantes Sara
-        sara_variants = entry.get('sara_variants', [])
+        sara_variants_raw = entry.get('sara_variants', [])
+        if not isinstance(sara_variants_raw, list):
+            continue
+        
         normalized_sara = []
-        for variant in sara_variants:
+        for variant in sara_variants_raw:
             normalized_v = normalize_sara_word(variant)
             if normalized_v and normalized_v not in normalized_sara:
                 normalized_sara.append(normalized_v)
