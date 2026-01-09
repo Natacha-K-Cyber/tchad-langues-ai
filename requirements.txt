@@ -1,0 +1,31 @@
+# Bibliothèques pour l'application web
+streamlit>=1.28.0
+
+# Bibliothèques pour les données
+pandas>=2.0.0
+pyyaml>=6.0
+
+# Bibliothèques pour les graphiques
+plotly>=5.17.0
+
+# Bibliothèques pour le web scraping (optionnel pour plus tard)
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+
+# Bibliothèques pour les PDFs
+PyPDF2>=3.0.0
+pdfplumber>=0.10.0
+
+# Bibliothèques pour l'entraînement du modèle LLM
+torch>=2.0.0
+transformers>=4.35.0
+datasets>=2.14.0
+accelerate>=0.24.0
+peft>=0.6.0  # Pour LoRA fine-tuning (plus efficace)
+bitsandbytes>=0.41.0  # Pour la quantification 4-bit
+sentencepiece>=0.1.99
+tokenizers>=0.15.0
+
+# Utilitaires
+tqdm>=4.66.0
+

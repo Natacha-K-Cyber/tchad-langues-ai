@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Data (ne pas commiter les données brutes)
+data/raw/*
+data/processed/*
+data/training/*
+!data/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/training/.gitkeep
+
+# Models (trop volumineux pour Git)
+models/*
+!models/.gitkeep
+
+# Certificats SSL
+*.pem
+cert.pem
+key.pem
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/cert.pem
+.streamlit/key.pem
+
+# Cache
+.cache/
+*.cache
+

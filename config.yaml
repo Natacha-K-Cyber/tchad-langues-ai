@@ -1,0 +1,184 @@
+# Configuration pour Tchad Langues AI - App Éducative
+
+app:
+  name: "Tchad Langues AI"
+  title: "🌟 Apprends les Langues du Tchad"
+  subtitle: "Découvre la richesse linguistique du Tchad"
+  theme:
+    primary_color: "#FF6B35"  # Orange chaud africain
+    secondary_color: "#004E89"  # Bleu profond
+    accent_color: "#FFC857"  # Jaune doré
+    success_color: "#06A77D"  # Vert nature
+    background_color: "#F5F5DC"  # Beige doux
+    text_color: "#2C3E50"  # Bleu foncé
+
+languages:
+  - name: "Sara (Sarh)"
+    code: "sara"
+    flag: "🇹🇩"
+    description: "Langue principale du groupe Sara"
+    color: "#FF6B35"
+    
+  - name: "Gambaye"
+    code: "gmb"
+    flag: "🇹🇩"
+    description: "Dialecte Sara de la région de Gambaye"
+    color: "#FFC857"
+    
+  - name: "Mbaye"
+    code: "mby"
+    flag: "🇹🇩"
+    description: "Dialecte Sara de la région de Mbaye"
+    color: "#06A77D"
+    
+  - name: "Arabe tchadien"
+    code: "ar_td"
+    flag: "🇹🇩"
+    description: "Arabe parlé au Tchad"
+    color: "#004E89"
+
+characters:
+  - name: "Neloumta"
+    role: "guide"
+    description: "Guide bienveillant et sage, expert des langues sara"
+    avatar: "👨🏿"
+    personality: "calme et patient"
+    greetings:
+      - "Bienvenue ! Je suis Neloumta, ton guide dans l'apprentissage des langues du Tchad."
+      - "Salut ! Prêt(e) à découvrir la beauté des langues sara ?"
+    
+  - name: "Togue"
+    role: "instructrice"
+    description: "Instructrice énergique et motivante"
+    avatar: "👩🏿"
+    personality: "enthousiaste et encourageante"
+    greetings:
+      - "Bonsoir ! Moi c'est Togue, je vais t'accompagner dans tes leçons !"
+      - "Hello ! Prête à apprendre ensemble ?"
+    
+  - name: "Ronel"
+    role: "compagnon"
+    description: "Compagnon d'apprentissage amical et curieux"
+    avatar: "👦🏿"
+    personality: "joyeux et curieux"
+    greetings:
+      - "Salut ! Je suis Ronel, ton copain d'apprentissage !"
+      - "Hey ! Apprenons ensemble, ça va être génial !"
+    
+  - name: "Senny"
+    role: "expert_linguistique"
+    description: "Experte linguistique et enseignante"
+    avatar: "👩🏿‍🏫"
+    personality: "savante et précise"
+    greetings:
+      - "Bonjour ! Je suis Senny, experte en langues du Tchad."
+      - "Bienvenue ! Ensemble, nous allons explorer la richesse linguistique."
+    
+  - name: "Manta"
+    role: "coach"
+    description: "Coach motivant pour maintenir ta motivation"
+    avatar: "💪🏿"
+    personality: "motivant et supportif"
+    greetings:
+      - "Salut champion(ne) ! Je suis Manta, je suis là pour te motiver !"
+      - "C'est parti ! Continuons notre belle progression !"
+    
+  - name: "Ngar"
+    role: "narrateur"
+    description: "Narrateur des histoires et contes culturels"
+    avatar: "📖"
+    personality: "conteur et culturel"
+    greetings:
+      - "Bienvenue ! Je suis Ngar, je vais te raconter des histoires du Tchad."
+      - "Écoute bien, je vais te partager des contes traditionnels."
+    
+  - name: "Nouba"
+    role: "ami_virtuel"
+    description: "Ami virtuel pour pratiquer les conversations"
+    avatar: "🤝"
+    personality: "amical et conversationnel"
+    greetings:
+      - "Salut ! Je suis Nouba, parlons ensemble dans nos langues !"
+      - "Bonjour ! Pratiquons une conversation en sara !"
+    
+  - name: "Nodji"
+    role: "tuteur"
+    description: "Tuteur patient pour les exercices difficiles"
+    avatar: "🎓"
+    personality: "patient et pédagogue"
+    greetings:
+      - "Hello ! Je suis Nodji, je t'aide à comprendre les points difficiles."
+      - "Pas de souci ! Je suis là pour t'expliquer étape par étape."
+    
+  - name: "Milamem"
+    role: "gardien_streak"
+    description: "Gardien qui encourage à maintenir la série quotidienne"
+    avatar: "🔥"
+    personality: "encourageant et fiable"
+    greetings:
+      - "Wouah ! Encore une journée de réussite ! Continue comme ça !"
+      - "Bravo ! Ta série est impressionnante, ne la lâche pas !"
+
+gamification:
+  xp_per_exercise: 10
+  xp_per_lesson_complete: 50
+  xp_per_streak_day: 5
+  hearts_per_day: 5
+  heart_cost_wrong_answer: 1
+  max_streak_bonus: 50
+  level_xp_thresholds: [0, 100, 250, 500, 1000, 2000, 4000, 8000, 16000, 32000]
+  
+lessons:
+  structure:
+    - level: 1
+      name: "Bases"
+      lessons:
+        - "Salutations"
+        - "Nombres 1-10"
+        - "Pronoms personnels"
+        - "Phrases de base"
+    
+    - level: 2
+      name: "Conversations quotidiennes"
+      lessons:
+        - "Au marché"
+        - "La famille"
+        - "Se présenter"
+        - "Demander son chemin"
+
+data_collection:
+  morkeg_books:
+    enabled: true
+    pdf_url: "https://morkegbooks.com/Services/World/Languages/SaraBagirmi/pdfs/SaraLanguagesLexicon.pdf"
+    project_url: "http://morkegbooks.com/Services/World/Languages/SaraBagirmi"
+  
+  persee_fr:
+    enabled: true
+    base_url: "https://www.persee.fr"
+    search_terms:
+      - "tchad langue"
+      - "langue sara"
+      - "gambaye"
+      - "mbaye"
+    max_results: 50
+
+model:
+  base_model: "mistralai/Mistral-7B-Instruct-v0.2"  # Modèle open source
+  use_quantization: true  # 4-bit quantization pour économiser de la mémoire
+  use_lora: true  # LoRA pour fine-tuning efficace
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  
+training:
+  output_dir: "./models/tchad_langues"
+  num_train_epochs: 3
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 2e-4
+  warmup_steps: 100
+  save_steps: 500
+  eval_steps: 500
+  logging_steps: 100
+  max_length: 512
+

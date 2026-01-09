@@ -1,0 +1,12 @@
+[server]
+port = 8501
+enableCORS = false
+enableXsrfProtection = false
+
+# Pour HTTPS, on va utiliser un certificat auto-signé
+# Note: Le navigateur affichera un avertissement de sécurité (c'est normal pour un certificat auto-signé)
+
+[server.ssl]
+certFile = ".streamlit/cert.pem"
+keyFile = ".streamlit/key.pem"
+
