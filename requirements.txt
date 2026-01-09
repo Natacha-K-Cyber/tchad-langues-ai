@@ -28,4 +28,5 @@ tokenizers>=0.15.0
 
 # Utilitaires
 tqdm>=4.66.0
+scipy>=1.10.0
 
