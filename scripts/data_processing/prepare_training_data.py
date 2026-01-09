@@ -216,27 +216,43 @@ def main():
     
     print(f"\nTotal d'entrees : {len(all_entries)}")
     
-    # Créer les exemples d'entraînement
-    print("\n[4/4] Creation des exemples d'entrainement...")
-    training_examples = create_training_examples(all_entries, max_examples=2000)
+    # Sauvegarder d'abord les entrées brutes du lexique
+    print("\n[4/5] Sauvegarde des entrees brutes du lexique...")
+    raw_entries_file = TRAINING_DIR / "lexicon_entries_raw.json"
+    with open(raw_entries_file, 'w', encoding='utf-8') as f:
+        json.dump(all_entries, f, ensure_ascii=False, indent=2)
+    print(f"   {len(all_entries)} entrees brutes sauvegardees : {raw_entries_file}")
     
-    print(f"   {len(training_examples)} exemples crees")
-    
-    # Sauvegarder les données d'entraînement
-    output_file = TRAINING_DIR / "training_data.json"
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(training_examples, f, ensure_ascii=False, indent=2)
-    
-    print(f"\nOK - Donnees d'entrainement sauvegardees : {output_file}")
+    # Créer les exemples d'entraînement seulement si on a des entrées
+    print("\n[5/5] Creation des exemples d'entrainement...")
+    if all_entries:
+        training_examples = create_training_examples(all_entries, max_examples=2000)
+        print(f"   {len(training_examples)} exemples crees")
+        
+        # Sauvegarder les données d'entraînement
+        output_file = TRAINING_DIR / "training_data.json"
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(training_examples, f, ensure_ascii=False, indent=2)
+        
+        print(f"   Exemples sauvegardes : {output_file}")
+    else:
+        print("   ATTENTION : Aucune entree trouvee, pas d'exemples crees")
+        print("   Le parsing du lexique n'a rien trouve.")
+        print("   Verifie le format avec : python scripts/data_processing/debug_lexicon.py")
     
     # Statistiques
     print(f"\nStatistiques:")
     print(f"   Entrees de lexique : {len(all_entries)}")
-    print(f"   Exemples d'entrainement : {len(training_examples)}")
-    print(f"   Fichier cree : {output_file}")
-    
+    if all_entries:
+        print(f"   Exemples d'entrainement : {len(training_examples)}")
     print(f"\nOK - Preparation terminee !")
-    print(f"   Tu peux maintenant entrainer le modele !")
+    
+    if all_entries:
+        print(f"   Prochaine etape : Nettoyage et normalisation")
+        print(f"   python scripts/data_processing/clean_and_normalize.py")
+    else:
+        print(f"   PROBLEME : Aucune entree extraite du lexique")
+        print(f"   Il faut corriger le parsing dans prepare_training_data.py")
 
 if __name__ == "__main__":
     main()

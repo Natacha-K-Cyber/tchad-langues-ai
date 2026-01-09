@@ -15,15 +15,41 @@ PROCESSED_DIR = DATA_DIR / "processed"
 
 def load_training_data():
     """Charge les données d'entraînement brutes"""
+    # Essayer d'abord le fichier des entrées brutes du lexique
+    raw_entries_file = TRAINING_DIR / "lexicon_entries_raw.json"
+    
+    if raw_entries_file.exists():
+        print(f"   Chargement depuis : {raw_entries_file}")
+        with open(raw_entries_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    # Sinon, essayer le fichier training_data.json (format instruction/input/output)
     training_file = TRAINING_DIR / "training_data.json"
     
-    if not training_file.exists():
-        print(f"ERREUR - Fichier introuvable : {training_file}")
-        print("Execute d'abord : python scripts/data_processing/prepare_training_data.py")
-        return None
+    if training_file.exists():
+        print(f"   Chargement depuis : {training_file}")
+        with open(training_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            # Convertir le format instruction/input/output vers french/sara_variants
+            if data and isinstance(data[0], dict) and 'input' in data[0]:
+                print("   Conversion du format instruction/input/output...")
+                converted = []
+                seen = set()
+                for entry in data:
+                    french = entry.get('input', '').strip()
+                    sara = entry.get('output', '').strip()
+                    if french and sara and french not in seen:
+                        seen.add(french)
+                        converted.append({
+                            'french': french,
+                            'sara_variants': [sara]
+                        })
+                return converted
+            return data
     
-    with open(training_file, 'r', encoding='utf-8') as f:
-        return json.load(f)
+    print(f"ERREUR - Aucun fichier trouve dans {TRAINING_DIR}")
+    print("Execute d'abord : python scripts/data_processing/prepare_training_data.py")
+    return None
 
 def clean_text(text):
     """
