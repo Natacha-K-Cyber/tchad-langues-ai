@@ -35,15 +35,46 @@ def load_training_data():
                 print("   Conversion du format instruction/input/output...")
                 converted = []
                 seen = set()
+                sara_codes = ['Beb', 'Bd', 'Gor', 'Gu', 'Kbb', 'Db', 'Mb', 'Mo', 'Nar', 'KbN', 'NgT', 'Ngb', 'Sr', 'Lk', 'Kul']
+                
                 for entry in data:
                     french = entry.get('input', '').strip()
-                    sara = entry.get('output', '').strip()
-                    if french and sara and french not in seen:
+                    output = entry.get('output', '').strip()
+                    
+                    if not french or not output:
+                        continue
+                    
+                    # Extraire les mots Sara de l'output (peut contenir des codes comme "Lk=màs¸")
+                    sara_words = []
+                    
+                    # Chercher les codes de langues dans l'output
+                    sara_matches = re.findall(r'([A-Z][a-z]?[A-Z]?)=([^:,\s]+)', output)
+                    for code, word in sara_matches:
+                        word = word.strip().rstrip(',').strip()
+                        word = re.sub(r'^[,:;\s]+|[,:;\s]+$', '', word)
+                        if word and code in sara_codes:
+                            sara_words.append(word)
+                    
+                    # Si pas de codes trouvés, prendre tout l'output comme mot Sara (peut être juste un mot)
+                    if not sara_words:
+                        # Enlever les codes restants
+                        clean_output = output
+                        for code in sara_codes:
+                            clean_output = re.sub(rf'{code}=[^:,\s]+', '', clean_output)
+                        clean_output = re.sub(r'[:,\s]+', ' ', clean_output).strip()
+                        clean_output = re.sub(r'^[,:;\s]+|[,:;\s]+$', '', clean_output)
+                        if clean_output and len(clean_output) > 0:
+                            sara_words.append(clean_output)
+                    
+                    # Si on a trouvé des mots Sara
+                    if sara_words and french not in seen:
                         seen.add(french)
                         converted.append({
                             'french': french,
-                            'sara_variants': [sara]
+                            'sara_variants': list(set(sara_words))  # Enlever doublons
                         })
+                
+                print(f"   {len(converted)} entrees converties")
                 return converted
             return data
     
