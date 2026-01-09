@@ -20,10 +20,10 @@ def create_dirs():
 def parse_lexicon_entries(text):
     """
     Parse les entrées du lexique depuis le texte extrait
-    Format réel: 
-    - Ligne 1: "mot français"
-    - Ligne 2: "Beb=mbô : Bd=rû : Gor=gæd"
-    - Ou parfois: "Beb=mbô : Bd=rû mot français"
+    Format réel observé:
+    - "à côté de acide : être" (ligne avec français)
+    - "Beb=mbô : Bd=rû Beb=màs¸ : Bd=màs¸" (ligne avec codes Sara)
+    - Parfois français et codes sur la même ligne
     """
     entries = []
     lines = text.split('\n')
@@ -43,7 +43,7 @@ def parse_lexicon_entries(text):
             continue
         
         # Ignorer les lignes d'en-tête
-        if 'Lexique' in line or 'Introduction' in line or line.startswith('Page') or line.isdigit():
+        if 'Lexique' in line or 'Introduction' in line or line.startswith('Page') or (line.isdigit() and len(line) < 4):
             i += 1
             continue
         
@@ -55,35 +55,42 @@ def parse_lexicon_entries(text):
             sara_words = []
             for code, word in sara_matches:
                 word = word.strip().rstrip(',').strip()
-                if word and code in sara_codes:
+                # Nettoyer les caractères parasites
+                word = re.sub(r'^[,:;\s]+|[,:;\s]+$', '', word)
+                if word and len(word) > 0 and code in sara_codes:
                     sara_words.append(word)
             
             if sara_words:
                 accumulated_sara.extend(sara_words)
             
-            # Chercher si il y a du français à la fin de cette ligne
-            # Enlever les codes de langues pour voir ce qui reste
+            # Chercher du français dans cette ligne (après les codes)
+            # Enlever tous les codes de langues
             remaining = line
             for code in sara_codes:
                 remaining = re.sub(rf'{code}=[^:,\s]+', '', remaining)
+            # Enlever les séparateurs
             remaining = re.sub(r'[:,\s]+', ' ', remaining).strip()
+            # Enlever les caractères parasites
+            remaining = re.sub(r'^[,:;\s]+|[,:;\s]+$', '', remaining)
             
-            # Si ce qui reste ressemble à du français (pas de caractères spéciaux Sara)
-            if remaining and len(remaining) > 2 and not re.search(r'[=:]', remaining):
-                # C'est probablement du français à la fin
+            # Si ce qui reste ressemble à du français (longueur raisonnable, pas de =)
+            if remaining and len(remaining) > 2 and len(remaining) < 200 and '=' not in remaining:
+                # C'est probablement du français
                 if accumulated_sara:
                     entries.append({
                         'french': remaining,
-                        'sara_variants': list(set(accumulated_sara))  # Enlever doublons
+                        'sara_variants': list(set(accumulated_sara))
                     })
                     accumulated_sara = []
                 current_french = None
+                i += 1
+                continue
             
-            # Vérifier la ligne suivante pour voir si c'est un nouveau mot français
+            # Si pas de français dans cette ligne, vérifier la suivante
             if i + 1 < len(lines):
                 next_line = lines[i + 1].strip()
                 # Si la ligne suivante n'a pas de codes de langues, c'est probablement un nouveau mot français
-                if next_line and not re.search(r'[A-Z][a-z]?[A-Z]?=', next_line):
+                if next_line and len(next_line) > 2 and not re.search(r'[A-Z][a-z]?[A-Z]?=', next_line):
                     # Sauvegarder l'entrée actuelle si on a des données
                     if accumulated_sara and current_french:
                         entries.append({
@@ -91,7 +98,11 @@ def parse_lexicon_entries(text):
                             'sara_variants': list(set(accumulated_sara))
                         })
                         accumulated_sara = []
-                    current_french = next_line
+                    # Le français suivant devient le nouveau
+                    french_clean = next_line.strip().rstrip(':').strip()
+                    french_clean = re.sub(r'^\d+\s+', '', french_clean)
+                    if len(french_clean) > 2 and len(french_clean) < 200:
+                        current_french = french_clean
                     i += 1  # Passer la ligne suivante aussi
                     continue
         
@@ -100,9 +111,11 @@ def parse_lexicon_entries(text):
             # C'est probablement une ligne de français
             french = line.strip().rstrip(':').strip()
             # Nettoyer (enlever les numéros de page, etc.)
-            french = re.sub(r'^\d+\s+', '', french)  # Enlever numéro de page au début
+            french = re.sub(r'^\d+\s+', '', french)
+            # Enlever caractères parasites
+            french = re.sub(r'^[,:;\s]+|[,:;\s]+$', '', french)
             
-            if len(french) > 2 and len(french) < 150:
+            if len(french) > 2 and len(french) < 200:
                 # Si on avait des traductions Sara accumulées, les sauvegarder
                 if accumulated_sara and current_french:
                     entries.append({
